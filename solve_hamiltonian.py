@@ -1,13 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import constants, linalg
+import matplotlib as mpl
 
 plt.rcParams['lines.linewidth'] = 1
+plt.rcParams['axes.xmargin'] = 0
+plt.rcParams['axes.ymargin'] = 0
 
-n = 400
-ts = np.linspace(0, 1e-6, n)
-dt = 1e-6/n
-qs = np.linspace(0, 20, 40)
+n1 = 400
+n2 = 50
+ts = np.linspace(0, 1e-6, n1)
+dt = 1e-6/n1
+qs = np.linspace(0, 35, n2)
+colormap = mpl.colormaps["cool"].resampled(n2)(range(n2))
+
 
 
 a = 1.2
@@ -18,6 +24,7 @@ t_fn_3 = lambda t, max: max*((2/ts[-1])*(t-(ts[-1]/2)))**5
 t_fn_4 = lambda t, max: max*((2/ts[-1])*(t-(ts[-1]/2)))
 t_sine_1 = lambda t, max: max*np.sin(2*np.pi*t/ts[-1])
 q_fn_1 = lambda q, max: max*10**(-(1/a)*np.log(q+1))
+q_fn_2 = lambda q, max: max*q/20
 
 
 class Hamiltonian:
@@ -62,13 +69,14 @@ class Hamiltonian:
                 flag = True
         if flag == False:
             return "t value must be within the ts array"
-        index = list(ts).index(t)
-        trotter_evolved = np.zeros(len(ts) + 1)
-        trotter_evolved[0] = wavefunction
-        for i, t in enumerate(ts):
-            time_operator = linalg.expm((-1j/constants.hbar)*(self.matrix(t))*dt)
-            trotter_evolved[i+1] = np.dot(time_operator, trotter_evolved[i])
-        return trotter_evolved[index]
+        trotter_evolved = list(np.zeros(len(ts)))
+        for i, j in enumerate(ts):
+            time_operator = linalg.expm((-1j/constants.hbar)*(self.matrix(j))*dt)
+            if i == 0:
+                trotter_evolved[i] = np.dot(time_operator, wavefunction)
+            else:
+                trotter_evolved[i] = np.dot(time_operator, trotter_evolved[i-1])
+        return trotter_evolved
 
 class System:
     def __init__(self, initial_wavefunction, hamiltonian):
@@ -76,11 +84,15 @@ class System:
         self.hamiltonian = hamiltonian
 
     def state(self, t):
-        return self.hamiltonian.evolve(self.initial_state, t)
+        if self.hamiltonian.delta_func == constant_fn:
+            return self.hamiltonian.evolve_analytic(self.initial_state, t)
+        else:
+            index = list(ts).index(t)
+            return self.hamiltonian.trotter_evolve(self.initial_state, t)[index]
 
-    def probability(self, desired_state, t):
+    def probability(self, desired_state, evolved_state):
         state = (1/np.sqrt(sum(np.array(desired_state)**2)))*np.array(desired_state)
-        inner_product = np.dot(np.conjugate(state), self.state(t))
+        inner_product = np.dot(np.conjugate(state), evolved_state)
         return np.real(np.conjugate(inner_product)*inner_product)
     
     def graph_probability(self, states, v_func, v_max):
@@ -88,45 +100,18 @@ class System:
         if self.hamiltonian.delta_func == constant_fn:
             fig, axs = plt.subplots(len(normalised_states))
             for i in range(len(normalised_states)):
-                axs[i].set_ylim(0, 1)
-                axs[i].set_xlim(ts[0], ts[-1])
-                self.hamiltonian.v_update(v_func, 1e-9, 0)
-                axs[i].plot(ts, np.array([self.probability(normalised_states[i], t) for t in ts]), 'b', alpha = 1)
-                self.hamiltonian.v_update(v_func, v_max, 0)
-                axs[i].plot(ts, np.array([self.probability(normalised_states[i], t) for t in ts]), 'black', alpha = 1)
                 for r, q in enumerate(qs):
                     self.hamiltonian.v_update(v_func, v_max, q)
-                    axs[i].plot(ts, np.array([self.probability(normalised_states[i], t) for t in ts]), 'r', alpha = (1/2)*(1-(r/len(qs))))
+                    axs[i].plot(ts, np.array([self.probability(normalised_states[i], self.state(t)) for t in ts]), color = colormap[r])
             plt.show()
         else:
             fig, axs = plt.subplots(len(normalised_states)+1)
             axs[0].plot(ts, np.array([self.hamiltonian.delta_func(t, self.hamiltonian.delta_max) for t in ts]), 'gold')
             for i in range(len(normalised_states)):
-                self.hamiltonian.v_update(v_func, 0, 0)
-                p1 = []
-                wavefunction = self.initial_state
-                for t in ts:
-                    p1.append(np.real(np.conjugate(np.dot(np.conjugate(normalised_states[i]), wavefunction))*np.dot(np.conjugate(normalised_states[i]), wavefunction)))
-                    time_operator = linalg.expm((-1j/constants.hbar)*(self.hamiltonian.matrix(t))*dt)
-                    wavefunction = np.dot(time_operator, wavefunction)
-                axs[i+1].plot(ts, p1, 'b', alpha = 1)
                 for r, q in enumerate(qs):
                     self.hamiltonian.v_update(v_func, v_max, q)
-                    p2 = []
-                    wavefunction = self.initial_state
-                    for t in ts:
-                        p2.append(np.real(np.conjugate(np.dot(np.conjugate(normalised_states[i]), wavefunction))*np.dot(np.conjugate(normalised_states[i]), wavefunction)))
-                        time_operator = linalg.expm((-1j/constants.hbar)*(self.hamiltonian.matrix(t))*dt)
-                        wavefunction = np.dot(time_operator, wavefunction)
-                    axs[i+1].plot(ts, p2, 'r', alpha = (1/2)*(1-(r/len(qs))))
-                self.hamiltonian.v_update(v_func, v_max, 0)
-                p1 = []
-                wavefunction = self.initial_state
-                for t in ts:
-                    p1.append(np.real(np.conjugate(np.dot(np.conjugate(normalised_states[i]), wavefunction))*np.dot(np.conjugate(normalised_states[i]), wavefunction)))
-                    time_operator = linalg.expm((-1j/constants.hbar)*(self.hamiltonian.matrix(t))*dt)
-                    wavefunction = np.dot(time_operator, wavefunction)
-                axs[i+1].plot(ts, p1, 'black', alpha = 1)
+                    trotter_states = self.hamiltonian.trotter_evolve(self.initial_state, ts[-1])
+                    axs[i+1].plot(ts, np.array([self.probability(normalised_states[i], trotter_states[r]) for r, t in enumerate(ts)]), color = colormap[r])
             plt.show()
 
 
@@ -138,5 +123,5 @@ h2 = Hamiltonian(2*np.pi*10**6, t_fn_1, 2*np.pi*50*10**6, 0, 2*np.pi*10**8)
 # system_1.graph_probability([[1,0,0,0], [0,1,1,0]], q_fn_1, 2*np.pi*10**8)
 
 
-# system_2 = System([1,0,0,0], h2)
-# system_2.graph_probability([[1,0,0,0], [0,1,1,0]], q_fn_1, 2*np.pi*10**8)
+system_2 = System([1,0,0,0], h2)
+system_2.graph_probability([[1,0,0,0], [0,1,1,0]], q_fn_1, 2*np.pi*10**8)
