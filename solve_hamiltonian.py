@@ -115,6 +115,15 @@ class System:
             plt.show()
 
 
+
+
+
+
+
+
+
+
+
 h1 = Hamiltonian(2*np.pi*10**6, constant_fn, 0, 0, 2*np.pi*10**8)
 h2 = Hamiltonian(2*np.pi*10**6, t_fn_1, 2*np.pi*50*10**6, 0, 2*np.pi*10**8)
 
