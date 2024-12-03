@@ -83,12 +83,12 @@ class System:
         self.initial_state = (1/np.sqrt(sum(np.array(initial_wavefunction)**2)))*np.array(initial_wavefunction)
         self.hamiltonian = hamiltonian
 
-    def state(self, t):
-        if self.hamiltonian.delta_func == constant_fn:
-            return self.hamiltonian.evolve_analytic(self.initial_state, t)
-        else:
+    def state(self, t, *method):
+        if (self.hamiltonian.delta_func != constant_fn) or (method == "numerical"):
             index = list(ts).index(t)
-            return self.hamiltonian.trotter_evolve(self.initial_state, t)[index]
+            return self.hamiltonian.trotter_evolve(self.initial_state, t)[index] 
+        else:
+            return self.hamiltonian.evolve_analytic(self.initial_state, t)
 
     def probability(self, desired_state, evolved_state):
         state = (1/np.sqrt(sum(np.array(desired_state)**2)))*np.array(desired_state)
@@ -115,22 +115,30 @@ class System:
             plt.show()
 
 
+h_time_independent = Hamiltonian(2*np.pi*10**6, constant_fn, 0, 0, 2*np.pi*10**8)
+h_time_dependent = Hamiltonian(2*np.pi*10**6, t_fn_1, 2*np.pi*50*10**6, 0, 2*np.pi*10**8)
 
 
+def compare_numerical_analytic(initial_wavefunction):
+    compare_system = System(initial_wavefunction, h_time_independent)
+    analytic_states = [compare_system.state(t) for t in ts]
+    numerical_states = compare_system.hamiltonian.trotter_evolve(initial_wavefunction, ts[-1])
+    analytic_probabilities = np.array([compare_system.probability(initial_wavefunction, x) for x in analytic_states])
+    numerical_probabilities = np.array([compare_system.probability(initial_wavefunction, x) for x in numerical_states])
+    residuals = analytic_probabilities - numerical_probabilities
+    fig, axs = plt.subplots(2, 1)
+    axs[0].plot(ts, analytic_probabilities, 'g')
+    axs[0].plot(ts, numerical_probabilities, 'r')
+    axs[1].plot(ts, residuals, 'o', 'b')
+    plt.show()
 
 
+compare_numerical_analytic([1,0,0,0])
 
 
-
-
-
-h1 = Hamiltonian(2*np.pi*10**6, constant_fn, 0, 0, 2*np.pi*10**8)
-h2 = Hamiltonian(2*np.pi*10**6, t_fn_1, 2*np.pi*50*10**6, 0, 2*np.pi*10**8)
-
-
-# system_1 = System([1,0,0,0], h1)
+# system_1 = System([1,0,0,0], h_time_independent)
 # system_1.graph_probability([[1,0,0,0], [0,1,1,0]], q_fn_1, 2*np.pi*10**8)
 
 
-system_2 = System([1,0,0,0], h2)
-system_2.graph_probability([[1,0,0,0], [0,1,1,0]], q_fn_1, 2*np.pi*10**8)
+# system_2 = System([1,0,0,0], h_time_dependent)
+# system_2.graph_probability([[1,0,0,0], [0,1,1,0]], q_fn_1, 2*np.pi*10**8)
