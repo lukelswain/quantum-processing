@@ -3,9 +3,11 @@ import matplotlib.pyplot as plt
 from scipy import constants, linalg
 import matplotlib as mpl
 
-plt.rcParams['lines.linewidth'] = 1
+plt.rcParams['lines.linewidth'] = 0.5
 plt.rcParams['axes.xmargin'] = 0
 plt.rcParams['axes.ymargin'] = 0
+plt.rcParams['xtick.minor.visible'] = True
+plt.rcParams['ytick.minor.visible'] = True
 
 n1 = 400
 n2 = 50
@@ -13,7 +15,6 @@ ts = np.linspace(0, 1e-6, n1)
 dt = 1e-6/n1
 qs = np.linspace(0, 35, n2)
 colormap = mpl.colormaps["cool"].resampled(n2)(range(n2))
-
 
 
 a = 1.2
@@ -98,14 +99,16 @@ class System:
     def graph_probability(self, states, v_func, v_max):
         normalised_states = np.array(list(map(lambda x: (1/np.sqrt(sum(np.array(x)**2)))*np.array(x), states)))
         if self.hamiltonian.delta_func == constant_fn:
-            fig, axs = plt.subplots(len(normalised_states))
+            fig, axs = plt.subplots(len(normalised_states), sharex=True)
+            fig.subplots_adjust(hspace=0)
             for i in range(len(normalised_states)):
                 for r, q in enumerate(qs):
                     self.hamiltonian.v_update(v_func, v_max, q)
                     axs[i].plot(ts, np.array([self.probability(normalised_states[i], self.state(t)) for t in ts]), color = colormap[r])
             plt.show()
         else:
-            fig, axs = plt.subplots(len(normalised_states)+1)
+            fig, axs = plt.subplots(len(normalised_states)+1, sharex=True)
+            fig.subplots_adjust(hspace=0)
             axs[0].plot(ts, np.array([self.hamiltonian.delta_func(t, self.hamiltonian.delta_max) for t in ts]), 'gold')
             for i in range(len(normalised_states)):
                 for r, q in enumerate(qs):
@@ -121,24 +124,37 @@ h_time_dependent = Hamiltonian(2*np.pi*10**6, t_fn_1, 2*np.pi*50*10**6, 0, 2*np.
 
 def compare_numerical_analytic(initial_wavefunction):
     compare_system = System(initial_wavefunction, h_time_independent)
-    analytic_states = [compare_system.state(t) for t in ts]
-    numerical_states = compare_system.hamiltonian.trotter_evolve(initial_wavefunction, ts[-1])
-    analytic_probabilities = np.array([compare_system.probability(initial_wavefunction, x) for x in analytic_states])
-    numerical_probabilities = np.array([compare_system.probability(initial_wavefunction, x) for x in numerical_states])
-    residuals = analytic_probabilities - numerical_probabilities
-    fig, axs = plt.subplots(2, 1)
-    axs[0].plot(ts, analytic_probabilities, 'g')
-    axs[0].plot(ts, numerical_probabilities, 'r')
-    axs[1].plot(ts, residuals, 'o', 'b')
+    fig, axs = plt.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 2]})
+    fig.subplots_adjust(hspace=0)
+    fig.set_size_inches(10, 7)
+    for r, q in enumerate(qs):
+        compare_system.hamiltonian.v_update(q_fn_1, 2*np.pi*10**8, q)
+        analytic_probabilities = np.array([compare_system.probability(initial_wavefunction, x) for x in [compare_system.state(t) for t in ts]])
+        numerical_probabilities = np.array([compare_system.probability(initial_wavefunction, x) for x in compare_system.hamiltonian.trotter_evolve(initial_wavefunction, ts[-1])])
+        residuals = analytic_probabilities - numerical_probabilities
+        axs[0].plot(ts*10**6, analytic_probabilities, 'b')
+        axs[0].plot(ts*10**6, numerical_probabilities, 'r')
+        axs[1].plot(ts*10**6, residuals, 'o', markersize=0.5)
+    axs[1].tick_params(axis='x', labelrotation=35)
+    axs[0].set_ylabel("P{$\\psi$(t=0)}", fontname="palatino linotype")
+    axs[1].set_ylabel("Residuals", fontname="palatino linotype")
+    plt.xlabel("t ($\\mu s$)", fontname="palatino linotype")
     plt.show()
 
 
-compare_numerical_analytic([1,0,0,0])
+def main():
+
+    compare_numerical_analytic([1,0,0,0])
 
 
-# system_1 = System([1,0,0,0], h_time_independent)
-# system_1.graph_probability([[1,0,0,0], [0,1,1,0]], q_fn_1, 2*np.pi*10**8)
+#   system_1 = System([1,0,0,0], h_time_independent)
+#   system_1.graph_probability([[1,0,0,0], [0,1,1,0]], q_fn_1, 2*np.pi*10**8)
 
 
-# system_2 = System([1,0,0,0], h_time_dependent)
-# system_2.graph_probability([[1,0,0,0], [0,1,1,0]], q_fn_1, 2*np.pi*10**8)
+#   system_2 = System([1,0,0,0], h_time_dependent)
+#   system_2.graph_probability([[1,0,0,0], [0,1,1,0]], q_fn_1, 2*np.pi*10**8)
+
+    return None
+
+if __name__ == "__main__":
+    main()
