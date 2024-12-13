@@ -205,12 +205,10 @@ def compare_numerical_analytic(initial_wavefunction, n_v):
     # plt.show()
 
 def timer_graph(system, method, *args):
-    n_array = np.arange(1, 100000, 100)
+    n_array = np.arange(1, 201000, 100)
     t_array = []
     for n in n_array:
         system.n_t_update(n)
-        print(system.n_t)
-        print(method(*args)[1])
         t_array.append(method(*args)[1])
     plt.plot(n_array, t_array)
     plt.show()
@@ -219,7 +217,7 @@ def timer_graph(system, method, *args):
 
 def main():
 
-    system_1 = System([1,0,0,0], h_time_independent)
+    # system_1 = System([1,0,0,0], h_time_independent)
     # system_1.graph_probability([[1,0,0,0], [0,1,1,0]], v_fn_1, 2*np.pi*10**8)
 
     system_2 = System([1,0,0,0], h_time_dependent)
@@ -227,8 +225,10 @@ def main():
 
     # compare_numerical_analytic([1,0,0,0])
     
-    timer_graph(system_2, system_2.state, system_2.ts[-1], "numerical")
-    timer_graph(system_1, system_1.state, system_1.ts[-1])
+    # system_2.n_t_update(625)
+    # print(sum([system_2.state(system_2.ts[-1], "numerical")[1] for i in range(200)])/200)
+    # timer_graph(system_2, system_2.state, system_2.ts[-1], "numerical")
+    # timer_graph(system_1, system_1.state, system_1.ts[-1])
 
 
 if __name__ == "__main__":
