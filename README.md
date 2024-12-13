@@ -20,6 +20,7 @@ OUTPUTS
 (1-5)&(7-8)-probability of system being in a desired state at a time t
 (1-8)-plot of probability for any given desired and initial states, over the specified time range
 (1-8)-comparison plot of analytical solution and numerical solution for a given state over the time range
+(1-8)-timer decorator that returns the value of the method and the excecution time, as well as a grapher function that plots a graph with increasing number of timesteps
 
 N.B.
 -only if hamiltonian time independent (detuning function chosen to be constant in time) can analytical solution be found, comparison plot method needs H to have this property
