@@ -709,7 +709,7 @@ class Circuit:
         self.hadamard_gate([target_pair[1]])
         return self.states
 
-    def ccz_gate(self, target_triplet:np.ndarray, ratio:float=-0.6821) -> None:
+    def ccz_gate(self, target_triplet:np.ndarray, ratio:float=0.6821) -> None:
         """Implement CCZ gate."""
         initial_array = self.system.qubit_array
         self.system.qubit_array = 100*(self.system.qubit_array+1.25)
@@ -733,9 +733,9 @@ class Circuit:
         # plt.tight_layout()  # noqa: ERA001
         # plt.show()  # noqa: ERA001
 
-        self.system.hyperfine_detuning = [(lambda t: 0*t) for i in range(self.system.n_qubits)]
-        self.system.hyperfine_rabi = [(lambda t: 0*t) for i in range(self.system.n_qubits)]
-        self.system.hyperfine_phase = [(lambda t: 0*t) for i in range(self.system.n_qubits)]
+        self.system.hyperfine_detuning = [(lambda t: 0*t) for _i in range(self.system.n_qubits)]
+        self.system.hyperfine_rabi = [(lambda t: 0*t) for _i in range(self.system.n_qubits)]
+        self.system.hyperfine_phase = [(lambda t: 0*t) for _i in range(self.system.n_qubits)]
         self.system.rydberg_detuning = lambda t: 0*t
         self.system.rydberg_rabi = lambda t: 0*t
         self.system.rydberg_phase = lambda t: 0*t
@@ -1657,20 +1657,20 @@ def main() -> None:
 
     # grover([0,0,0,0,0,0,0,1])  # noqa: ERA001
 
-    trial = System()
+    # trial = System()  # noqa: ERA001
 
-    t3 = Circuit(trial, [1,1,1,1,1,1,1,1])
-    print(t3.output())  # noqa: T201
+    # t3 = Circuit(trial, [1,1,1,1,1,1,1,1])  # noqa: ERA001
+    # print(t3.output())  # noqa: ERA001
     # t3.p_gate([0], np.pi)  # noqa: ERA001
     # t3.measure_qubits([0,1,2])  # noqa: ERA001
-    t3.hadamard_gate([2])
+    # t3.hadamard_gate([2])  # noqa: ERA001
     # t3.rz_gate([1], 2*np.pi)  # noqa: ERA001
     # t3.rx_gate([0,1,2], 2*np.pi)  # noqa: ERA001
     # t3.ccz_gate([0,1,2])  # noqa: ERA001
 
-    print(t3.output())  # noqa: T201
+    # print(t3.output())  # noqa: ERA001
     # t3.measure_qubits([0,1,2])  # noqa: ERA001
-    t3.graph_bloch(2)
+    # t3.graph_bloch(2)  # noqa: ERA001
 
 
 if __name__ == "__main__":
