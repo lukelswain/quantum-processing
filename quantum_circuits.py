@@ -12,7 +12,7 @@ plt.rc("xtick", labelsize="large")
 plt.rc("ytick", labelsize="large")
 
 class System:
-    """Creates a class for of the quantum system itself.
+    """Create a class for of the quantum system itself.
 
     Includes properties of physical system such as the number of qubits and their positions in space, the laser parameters,
     the decoherence parameters due to interaction with the external environment; includes also the number timesteps.
