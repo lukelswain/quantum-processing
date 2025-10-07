@@ -1,3 +1,5 @@
+Need to rewrite/update in md. Haven't touched this since I created the latest version quantum_circuits.py, which incorporates pretty much all the functionality of the solve_hamiltonian.py script (which is what is described below) but more concisely, and as a base starting point. It has much more additional functionality.
+
 INTRODUCTION
 Script provides a method to compute the time evolution of a system of a two qubit system, with an excited state modelled as a Rydberg state of one of the neutral atoms. Also provided are methods to then graph this evolution over time, with adjustable physical parameters.
 
