@@ -396,7 +396,7 @@ class Circuit:
             v = 2*np.imag(rho[1][0])
             w = np.real(rho[0][0] - rho[1][1])
             bloch_vectors.append([0, 0, 0, u, v, w])
-        X, Y, Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+        X, Y, Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
 
         theta = np.linspace(0, 2 * np.pi, 100)
         phi = np.linspace(0, np.pi, 50)
@@ -970,7 +970,7 @@ def decoherence_simulation_cz() -> None:  # noqa: PLR0915
         v = 2*np.imag(rho[2][1])
         w = np.real(rho[1][1] - rho[2][2])
         bloch_vectors.append([0, 0, 0, u, v, w])
-    _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+    _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
 
     theta = np.linspace(0, 2 * np.pi, 100)
     phi = np.linspace(0, np.pi, 50)
@@ -1031,7 +1031,7 @@ def decoherence_simulation_cz() -> None:  # noqa: PLR0915
         v = 2*np.sqrt(2)*np.imag(rho[5][4])
         w = np.real(rho[4][4] - 2*rho[5][5])
         bloch_vectors.append([0, 0, 0, u, v, w])
-    _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+    _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
 
     theta = np.linspace(0, 2 * np.pi, 100)
     phi = np.linspace(0, np.pi, 50)
@@ -1095,7 +1095,7 @@ def decoherence_simulation_ccz() -> None:  # noqa: PLR0915
         v = 2*np.imag(rho[2][1])
         w = np.real(rho[1][1] - rho[2][2])
         bloch_vectors.append([0, 0, 0, u, v, w])
-    _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+    _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
 
     theta = np.linspace(0, 2 * np.pi, 100)
     phi = np.linspace(0, np.pi, 50)
@@ -1147,7 +1147,7 @@ def decoherence_simulation_ccz() -> None:  # noqa: PLR0915
         v = 2*np.imag(np.sqrt(2)*rho[5][4])
         w = np.real(rho[4][4] - 2*rho[5][5])
         bloch_vectors.append([0, 0, 0, u, v, w])
-    _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+    _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
     figure = plt.figure()
     ax = figure.add_subplot(111, projection="3d")
     ax.plot_surface(x, y, z, cmap="Greys", alpha=0.2)
@@ -1190,7 +1190,7 @@ def decoherence_simulation_ccz() -> None:  # noqa: PLR0915
         v = 2*np.imag(np.sqrt(3)*rho[14][13])
         w = np.real(rho[13][13] - 3*rho[14][14])
         bloch_vectors.append([0, 0, 0, u, v, w])
-    _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+    _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
     figure = plt.figure()
     ax = figure.add_subplot(111, projection="3d")
     ax.plot_surface(x, y, z, cmap="Greys", alpha=0.2)
@@ -1272,7 +1272,7 @@ def cz_bloch_graph(protocol:str) -> None:  # noqa: PLR0915
             v = 2*np.imag(density_operator[2][1])
             w = np.real(density_operator[1][1] - density_operator[2][2])
             bloch_vectors.append([0, 0, 0, u, v, w])
-        _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+        _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
 
         theta = np.linspace(0, 2*np.pi, 100)
         phi = np.linspace(0, np.pi, 50)
@@ -1313,7 +1313,7 @@ def cz_bloch_graph(protocol:str) -> None:  # noqa: PLR0915
             v = 2*np.imag(np.sqrt(2)*density_operator[5][4])
             w = np.real(density_operator[4][4] - 2*density_operator[5][5])
             bloch_vectors.append([0, 0, 0, u, v, w])
-        _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+        _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
         figure = plt.figure(figsize=(4.5,4.5))
         ax = figure.add_subplot(111, projection="3d")
         ax.plot_surface(x, y, z, cmap="Greys", alpha=0.2)
@@ -1344,7 +1344,7 @@ def cz_bloch_graph(protocol:str) -> None:  # noqa: PLR0915
             v = 2*np.imag(density_operator[2][1])
             w = np.real(density_operator[1][1] - density_operator[2][2])
             bloch_vectors.append([0, 0, 0, u, v, w])
-        _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+        _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
 
         theta = np.linspace(0, 2 * np.pi, 100)
         phi = np.linspace(0, np.pi, 50)
@@ -1384,7 +1384,7 @@ def cz_bloch_graph(protocol:str) -> None:  # noqa: PLR0915
             v = 2*np.imag(np.sqrt(2)*density_operator[5][4])
             w = np.real(density_operator[4][4] - 2*density_operator[5][5])
             bloch_vectors.append([0, 0, 0, u, v, w])
-        _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+        _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
         figure = plt.figure(figsize=(4.5,4.5))
         ax = figure.add_subplot(111, projection="3d")
         ax.plot_surface(x, y, z, cmap="Greys", alpha=0.2)
@@ -1489,7 +1489,7 @@ def ccz_bloch_graph() -> None:  # noqa: PLR0915
         v = 2*np.imag(density_operator[2][1])
         w = np.real(density_operator[1][1] - density_operator[2][2])
         bloch_vectors.append([0, 0, 0, u, v, w])
-    _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+    _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
 
     theta = np.linspace(0, 2 * np.pi, 100)
     phi = np.linspace(0, np.pi, 50)
@@ -1529,7 +1529,7 @@ def ccz_bloch_graph() -> None:  # noqa: PLR0915
         v = 2*np.imag(np.sqrt(2)*density_operator[5][4])
         w = np.real(density_operator[4][4] - 2*density_operator[5][5])
         bloch_vectors.append([0, 0, 0, u, v, w])
-    _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+    _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
     figure = plt.figure(figsize=(3,3))
     ax = figure.add_subplot(111, projection="3d")
     ax.plot_surface(x, y, z, cmap="Greys", alpha=0.2)
@@ -1560,7 +1560,7 @@ def ccz_bloch_graph() -> None:  # noqa: PLR0915
         v = 2*np.imag(np.sqrt(3)*density_operator[14][13])
         w = np.real(density_operator[13][13] - 3*density_operator[14][14])
         bloch_vectors.append([0, 0, 0, u, v, w])
-    _X, _Y, _Z, U, V, W = zip(*bloch_vectors)  # noqa: N806
+    _X, _Y, _Z, U, V, W = zip(*bloch_vectors, strict=True)  # noqa: N806
     figure = plt.figure(figsize=(3,3))
     ax = figure.add_subplot(111, projection="3d")
     ax.plot_surface(x, y, z, cmap="Greys", alpha=0.2)
